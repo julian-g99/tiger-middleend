@@ -61,3 +61,6 @@ class IRInstruction:
 
 	def add_prev(self, pred):
 		self.preds.append(pred)
+	
+	def __str__(self):
+		return "line number: {}, type: {}, argument_list: {}".format(self.line, self.instruction_type, self.argument_list)

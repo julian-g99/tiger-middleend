@@ -1,0 +1,51 @@
+import re
+from ir_instruction import IRInstruction
+
+def parse_instructions(fp):
+	function_regex = r'^.+ .+(.*):$'
+	instructions = []
+	with open(fp, 'r') as file:
+		line_num = 0
+		for line in file:
+			if "#start_function" in line:
+				instructions.append(IRInstruction(line_num, "function_start", []))
+			elif "#end_function" in line:
+				instructions.append(IRInstruction(line_num, "function_end", []))
+			elif "int-list:" in line:
+				instructions.append(IRInstruction(line_num, "function_int_decl", get_variables(line)))
+			elif "float-list:" in line:
+				instructions.append(IRInstruction(line_num, "function_float_decl", get_variables(line)))
+			elif re.match(function_regex, line) != None:
+				instructions.append(IRInstruction(line_num, "function_def", []))
+			elif ":" in line:
+				instructions.append(IRInstruction(line_num, "label", [line[len(line) - len(line.strip()) - 1 : line.find(":")]]))
+			elif "assign" in line:
+				arg_list = get_arguments(line)
+				if len(arg_list) == 2:
+					instructions.append(IRInstruction(line_num, "val_assign", arg_list))
+				elif len(arg_list) == 3:
+					instructions.append(IRInstruction(line_num, "array_assign", arg_list))
+			else:
+				opcode = line[len(line) - len(line.strip()) - 1 : line.find(',')]
+				arg_list = get_arguments(line)
+				instructions.append(IRInstruction(line_num, opcode, arg_list))
+			line_num += 1
+	return instructions
+
+def get_arguments(line):
+	return [arg.strip() for arg in line.split(", ")[1:]]
+
+def get_variables(line):
+	colon_index = line.find(": ")
+	if colon_index != -1:
+		var_sub = line[colon_index + 2:]
+		return [var.strip() for var in var_sub.split(", ")]
+	else:
+		return []
+
+
+if __name__ == "__main__":
+	instructions = parse_instructions("public_test_cases/quicksort/quicksort.ir")
+	for i in instructions:
+		if i.instruction_type == "label":
+			print(i)

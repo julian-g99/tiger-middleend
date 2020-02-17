@@ -18,6 +18,7 @@ class IRInstruction:
 					 'brneq',
 					 'brlt',
 					 'brgq',
+					 'brgt',
 					 'brgeq',
 					 'brleq',
 					 'goto',
@@ -51,16 +52,14 @@ class IRInstruction:
 	def does_kill(self, other_def):
 		return self.argument_list[0] == other_def.argument_list[0]
 
-	def get_target(self):
-		has_target = ['breq', 'sub', 'add', 'mult', 'div', 'and', 'or', 'callr', 'array_load']
+	def get_write_target(self):
+		has_target = ['val_assign', 'array_assign', 'sub', 'add', 'mult', 'div', 'and', 'or', 'callr', 'array_load']
 		if (self.instruction_type in has_target):
 			return self.argument_list[0].strip()
 
-	# def add_succ(self, succ):
-	# 	self.succs.append(succ)
-
-	# def add_prev(self, pred):
-	# 	self.preds.append(pred)
+	def get_branch_target(self):
+		if self.is_branch:
+			return self.argument_list[0]
 	
 	def __str__(self):
 		return "line number: {}, type: {}, argument_list: {}".format(self.line, self.instruction_type, self.argument_list)

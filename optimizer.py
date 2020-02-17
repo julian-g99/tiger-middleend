@@ -16,8 +16,18 @@ def deadcode_elim(cfg, sets):
 
     while len(worklist > 0):
         i = worklist.pop()
-        instr = instructions[i]
-        
+        instr2 = instructions[i]
+        for j in range(len(sets[i]["in"])):
+            instr2 = instructions[j]
+            if instr2.get_write_target() in instr1.get_dependencies():
+                if not (j in marked):
+                    marked.append(j)
+                    worklist.append(j)
+    
+    #sweep
+    for i in range(len(instructions)):
+        if not (i in marked):
+            cfg.remove(i)
 
 def fixed_point_iter(cfg):
     instructions = cfg.instructions

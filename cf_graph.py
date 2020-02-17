@@ -51,7 +51,7 @@ class CFGraph():
     def _find_label(self, label):
         for i in range(len(self.instructions)):
             instr = self.instructions[i]
-            if instr.is_label and label == instr.get_target:
+            if instr.is_label and label == instr.get_branch_target():
                 return i
         return -1
     

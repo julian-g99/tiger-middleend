@@ -3,12 +3,12 @@ from ir_instruction import IRInstruction
 from parser import get_functions
 import copy
 
-def perform_deadcode(instructions):
+def perform_deadcode(instructions, should_print=False):
 	functions = get_functions(instructions)
 	cfgs = [CFGraph.build(func) for func in functions]
 	optimized_instructions = []
 	for cfg in cfgs:
-		deadcode_elim_marksweep(cfg)
+		deadcode_elim_marksweep(cfg, should_print)
 		optimized_instructions += cfg.instructions
 	return optimized_instructions
 
@@ -21,7 +21,7 @@ def perform_copy_propagation(instructions):
 		optimized_instructions += cfg.instructions
 	return optimized_instructions
 
-def deadcode_elim_marksweep(cfg):
+def deadcode_elim_marksweep(cfg, should_print=False):
 	sets = fixed_point_iter(cfg)
 	instructions = cfg.instructions
 	worklist = []
@@ -37,18 +37,8 @@ def deadcode_elim_marksweep(cfg):
 	while len(worklist) > 0:
 		i = worklist.pop()
 		instr1 = instructions[i]
-		# for j in range(len(sets[i]["in"])):
 		for j in sets[i]["in"]:
 			instr2 = instructions[j]
-			# print("instruction 1 is: {}, uses are: {}".format(instr1, instr.get_uses()))
-			# if i == 9:
-				# print("in set: {}".format(sets[i]["in"]))
-				# print("out set: {}".format(sets[i]["out"]))
-			# if i == 9 and j == 8:
-				# print("instruction 9: {}".format(instr1))
-				# print("instruction 8: {}".format(instr2))
-				# print("instruction 9 uses: {}".format(instr1.get_uses()))
-				# print("instruction 8 target: {}".format(instr2.get_write_target()))
 			if instr1.get_uses() != None and instr2.get_write_target() != None:
 				if instr2.get_write_target() in instr1.get_uses():
 					if not (j in marked):
@@ -68,6 +58,7 @@ def deadcode_elim_marksweep(cfg):
 	while i < len(cfg.instructions):
 	# for i in range(len(instructions)):
 		if not (i in marked):
+			print(cfg.instructions[i].instruction_type)
 			cfg.remove(i)
 		i += 1
 
@@ -78,27 +69,43 @@ def copy_propagation(cfg):
 	# instr: w = x
 	# instr2: x = y
 	# so we want to replace the `x` in instr with `y`
+	# print(cfg.instructions[5])
 	for i in range(len(cfg.instructions)):
 		instr = cfg.instructions[i]
 		if instr.is_use:
 			for j in range(len(instr.get_uses())):
 				instr_copies = get_all_copies_of(copies, instr.get_uses()[j])
 				arg_copies = set([line for (target, value, line) in instr_copies])
-				intersect = instr_copies.intersection(sets[i]["in"])
-				if len(intersect) == 1:
+				intersect = arg_copies.intersection(sets[i]["in"])
+				only = only_copy(cfg.instructions, intersect)
+				if only != None: 
 					has_redef = False
-					instr2 = cfg.instructions[intersect.pop()]
+					instr2 = cfg.instructions[only]
 					for line_num in sets[i]["in"]:
 						if cfg.instructions[line_num].is_def and cfg.instructions[line_num].get_write_target() == instr2.argument_list[1]:
 							has_redef = True
 					if not has_redef:
 						cfg.instructions[i].set_use(j, instr2.argument_list[1])
 
+def only_copy(instructions, intersect):
+	if len(intersect) == 0:
+		return None
+	else:
+		# first = instructions[intersect.pop()].line
+		first = intersect.pop()
+		for i in intersect:
+			if i != first:
+				return None
+		return first
+
+
 def get_all_copies(cfg):
 	copies = set()
-	for instr in cfg.instructions:
-		if instr.instruction_type == "assign":
-			my_tup = instr.argument_list[0], instr.argument_list[1], instr.line
+	# for instr in cfg.instructions:
+	for i in range(len(cfg.instructions)):
+		instr = cfg.instructions[i]
+		if instr.instruction_type == "val_assign":
+			my_tup = instr.argument_list[0], instr.argument_list[1], i
 			copies.add(my_tup)
 	return copies
 

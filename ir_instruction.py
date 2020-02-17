@@ -99,6 +99,7 @@ class IRInstruction:
 	def set_use(self, idx, arg):
 		binary_instructions = ['add', 'sub', 'mult', 'div', 'and', 'or']
 		branches = ['breq', 'brneq', 'brlt', 'brgt', 'brgeq', 'brleq']
+		# print("set use called on index: {}, arg: {}".format(idx, arg))
 		if self.instruction_type == "val_assign":
 			if idx != 0:
 				print("set use out of bounds. instruction:{}, idx: {}, arg:{}"\

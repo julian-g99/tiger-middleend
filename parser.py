@@ -17,7 +17,7 @@ def parse_instructions(fp):
 			elif "float-list:" in line:
 				instructions.append(IRInstruction(line_num, "function_float_decl", get_variables(line)))
 			elif re.match(function_regex, line) != None:
-				instructions.append(IRInstruction(line_num, "function_def", []))
+				instructions.append(IRInstruction(line_num, "function_def", [line]))
 			elif ":" in line:
 				instructions.append(IRInstruction(line_num, "label", [line[len(line) - len(line.strip()) - 1 : line.find(":")]]))
 			elif "assign" in line:
@@ -26,6 +26,8 @@ def parse_instructions(fp):
 					instructions.append(IRInstruction(line_num, "val_assign", arg_list))
 				elif len(arg_list) == 3:
 					instructions.append(IRInstruction(line_num, "array_assign", arg_list))
+			elif line.strip() == "" :
+				continue
 			else:
 				opcode = line[len(line) - len(line.strip()) - 1 : line.find(',')]
 				arg_list = get_arguments(line)
@@ -38,16 +40,24 @@ def get_functions(instructions):
 	functions = []
 	line = 0
 	while line < len(instructions):
-		if instructions[line].type == 'function_start':
+		if instructions[line].instruction_type == 'function_start':
 			functions.append([instructions[line]])
 			line += 1
-			while line < len(instructions) and instructions[line].type != 'function_end':
+			while line < len(instructions) and instructions[line].instruction_type != 'function_end':
 				functions[-1].append(instructions[line])
 				line += 1
-			if (line < len(instructions) and instructions[line].type == 'function_end'):
+			if (line < len(instructions) and instructions[line].instruction_type == 'function_end'):
 				functions[-1].append(instructions[line])
 			line += 1
 	return functions
+
+
+def flatten_functions(functions):
+	instructions = []
+	for func in functions:
+		for instr in func:
+			instructions.append(instr)
+	return instructions
 
 
 def get_arguments(line):
@@ -66,5 +76,4 @@ def get_variables(line):
 if __name__ == "__main__":
 	instructions = parse_instructions("public_test_cases/quicksort/quicksort.ir")
 	for i in instructions:
-		if i.instruction_type == "label":
-			print(i)
+		print(i)

@@ -1,6 +1,23 @@
 from cf_graph import CFGraph
 from ir_instruction import IRInstruction
 
+def deadcode_elim(cfg, sets):
+    instructions = cfg.instructions
+    worklist = []
+    marked = []
+    worked = []
+    
+    #mark
+    for i in range(len(instructions)):
+        instr = instructions[i]
+        if instr.is_critical:
+            worklist.append(i)
+            marked.append(i)
+
+    while len(worklist > 0):
+        i = worklist.pop()
+        instr = instructions[i]
+        
 
 def fixed_point_iter(cfg):
     instructions = cfg.instructions

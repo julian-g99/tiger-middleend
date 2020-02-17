@@ -20,11 +20,11 @@ class CFGraph():
                 predecessors.append(k)
         return predecessors
 
-
-
     @staticmethod
-    def build(self, instructions):
+    def build(instructions):
         adjlist = {}
+        for i in range(len(instructions)):
+            adjlist[i] = []
         cfg = CFGraph(instructions, adjlist)
         cfg._rbuild(0, [])
         return cfg
@@ -38,6 +38,9 @@ class CFGraph():
         built.append(iline)
         instr = self.instructions[iline]
         if instr.is_branch:
+     
+            import pdb
+            pdb.set_trace()
             tline = self._find_label(instr.get_target())
             self.adjlist[iline].append(tline)
             self._rbuild(tline, built)

@@ -52,6 +52,26 @@ class IRInstruction:
 	def does_kill(self, other_def):
 		return self.argument_list[0] == other_def.argument_list[0]
 
+	def get_uses(self):
+		binary_instructions = ['add', 'sub', 'mult', 'div', 'and', 'or']
+		branches = ['breq', 'brneq', 'brlt', 'brgt', 'brgeq', 'brleq']
+		if self.instruction_type == "val_assign":
+			return self.argument_list[1]
+		elif self.instruction_type in binary_instructions:
+			return self.argument_list[1:3]
+		elif self.instruction_type in branches:
+			return self.argument_list[1:3]
+		elif self.instruction_type == "callr":
+			return self.argument_list[1:]
+		elif self.instruction_type == "call":
+			return self.argument_list[2:]
+		elif self.instruction_type == "array_store":
+			return self.argument_list[:] #NOTE: the last argument should always be a constant
+		elif self.instruction_type == "array_load":
+			return self.argument_list[1]
+		elif self.instruction_type == "array_assign":
+			return self.argument_list[:]
+
 	def get_write_target(self):
 		has_target = ['val_assign', 'array_assign', 'sub', 'add', 'mult', 'div', 'and', 'or', 'callr', 'array_load']
 		if (self.instruction_type in has_target):
@@ -59,8 +79,9 @@ class IRInstruction:
 
 	def get_branch_target(self):
 		jumps = ['breq', 'brneq', 'brlt', 'brgt', 'brgeq', 'brleq', 'goto']
-		if self.instruction_type == "goto" or self.instruction_type == "branch":
+		if self.instruction_type in jumps:
 			return self.argument_list[0]
+
 
 	def add_succ(self, succ):
 		self.succs.append(succ)

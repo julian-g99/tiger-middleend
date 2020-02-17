@@ -2,25 +2,28 @@
 void quicksort(int[100] A, int lo, int hi):
 int-list: mid, pivot, i, j, ti, tj, x, j1
 float-list:
-    assign, i, 0
-    assign, j, 0
     brgeq, end, lo, hi
+    add, mid, lo, hi
+    div, mid, mid, 2
     array_load, pivot, A, mid
     sub, i, lo, 1
     add, j, hi, 1
 loop0:
 loop1:
+    add, i, i, 1
     array_load, x, A, i
+    assign, ti, x
     brlt, loop1, ti, pivot
 loop2:
+    sub, j, j, 1
     array_load, x, A, j
+    assign, tj, x
     brgt, loop2, tj, pivot
     brgeq, exit0, i, j
     array_store, ti, A, j
     array_store, tj, A, i
     goto, loop0
 exit0:
-    add, j1, j, 1
     call, quicksort, A, lo, j
     add, j, j, 1
     call, quicksort, A, j, hi

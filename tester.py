@@ -1,6 +1,7 @@
 from parser import parse_instructions, get_functions
 from cf_graph import CFGraph
 from ir_generation import generate_ir
+from optimizer import deadcode_elim_marksweep
 
 
 
@@ -9,7 +10,7 @@ def test_quicksort():
     functions = get_functions(instructions)
     cfgs = [CFGraph.build(func) for func in functions]
     for cfg in cfgs:
-        cfg.display()
+        deadcode_elim_marksweep(cfg)
     generate_ir(instructions, "quicksort.ir")
 
 def main():

@@ -3,7 +3,8 @@ class CFGraph():
         self.instructions = instructions
         self.adjlist = adjlist
     
-    def get_kill_set(self, instr1):
+    def get_kill_set(self, iline):
+        instr1 = self.instructions[iline]
         kill = []
         if not instr1.is_def:
             return kill
@@ -13,12 +14,28 @@ class CFGraph():
                 kill.append(instr2)
         return kill
     
-    def get_predecessors(self, instr):
+    def get_predecessors(self, iline):
         predecessors = []
         for k in self.adjlist.keys():
-            if instr in self.adjlist[k]:
+            if iline in self.adjlist[k]:
                 predecessors.append(k)
         return predecessors
+    
+    def remove(self, iline):
+        if not (iline in self.adjlist.keys()):
+            raise Exception("line number not found in cfg")
+        for i in range(len(self.instructions)):
+            import pdb
+            pdb.set_trace()
+            print(iline)
+            if self.instructions[i].line == iline:
+                self.instructions.pop(iline)
+        self.adjlist.pop(iline)
+        for k in self.adjlist.keys():
+            if iline in self.adjlist[k]:
+                self.adjlist[k].remove(iline)
+            
+
 
     @staticmethod
     def build(instructions):
@@ -38,10 +55,7 @@ class CFGraph():
         built.append(iline)
         instr = self.instructions[iline]
         if instr.is_branch:
-     
-            import pdb
-            pdb.set_trace()
-            tline = self._find_label(instr.get_target())
+            tline = self._find_label(instr.get_branch_target())
             self.adjlist[iline].append(tline)
             self._rbuild(tline, built)
         if (not instr.is_goto) and (iline + 1 < len(self.instructions)):
@@ -51,12 +65,21 @@ class CFGraph():
     def _find_label(self, label):
         for i in range(len(self.instructions)):
             instr = self.instructions[i]
-            if instr.is_label and label == instr.get_branch_target():
+            if instr.is_label and label == instr.get_label():
                 return i
         return -1
     
     def display(self):
         print("=====")
         for k in self.adjlist.keys():
-            print(k)
+            print("{}: {}".format(k, self.adjlist[k]))
+        print("=====")
+    
+    def display_verbose(self):
+        print("=====")
+        for k in self.adjlist.keys():
+            print(self.instructions[k], end=": ")
+            for i in self.adjlist[k]:
+                print(self.instructions[i], end=", ")
+            print()
         print("=====")

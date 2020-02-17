@@ -31,7 +31,6 @@ def deadcode_elim_marksweep(cfg):
 	while i < len(cfg.instructions):
 	# for i in range(len(instructions)):
 		if not (i in marked):
-			print("removing: {}".format(cfg.instructions[i]))
 			cfg.remove(i)
 		i += 1
 
@@ -44,12 +43,12 @@ def fixed_point_iter(cfg):
 	for i in range(len(instructions)):
 		instr = instructions[i]
 		bblock = {}
-		bblock["in"] = []
-		bblock["gen"] = []
+		bblock["in"] = set()
+		bblock["gen"] = set() 
 		if instr.is_def:
-			bblock["gen"].append(i)
-		bblock["kill"] = cfg.get_kill_set(i)
-		bblock["out"] = bblock["in"]
+			bblock["gen"].add(i)
+		bblock["kill"] = set(cfg.get_kill_set(i))
+		bblock["out"] = bblock["in"].copy()
 		sets.append(bblock)
 
 	#iterate
@@ -59,15 +58,17 @@ def fixed_point_iter(cfg):
 		
 		for i in range(len(instructions)):
 			#calc IN
-			instr = instructions[i]
-			in_set = []
+			# instr = instructions[i]
+			in_set = set()
 			for p in cfg.get_predecessors(i):
-				in_set = set(in_set).union(sets[p]["out"]) #CHECK: changed here
+				in_set = in_set.union(sets[p]["out"]) #CHECK: changed here
 			sets[i]["in"] = in_set
 		
 			#calc OUT
-			out_set = list(set(sets[i]["gen"]).union(set(in_set) - set(sets[i]["kill"])))
-			if sets[i]["out"].sort() != out_set.sort():
+			# out_set = list(set(sets[i]["gen"]).union(set(in_set) - set(sets[i]["kill"])))
+			out_set = sets[i]["gen"].union(in_set.difference(sets[i]["kill"]))
+			# if sets[i]["out"].sort() != out_set.sort():
+			if sets[i]["out"] != out_set:
 				change = True
 			sets[i]["out"] = out_set
 	

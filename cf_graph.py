@@ -49,7 +49,6 @@ class CFGraph():
             adjlist[i] = []
         cfg = CFGraph(instructions, adjlist)
         cfg._rbuild(0, [])
-        print(cfg)
         return cfg
     
     def _rbuild(self, iline, built):

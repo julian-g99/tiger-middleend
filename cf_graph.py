@@ -36,7 +36,7 @@ class CFGraph():
             # print("number of instructions: {}, instruction line: {}".format(len(self.instructions), i))
             # if self.instructions[i].line == iline:
                 # self.instructions.pop(iline)
-        self.adjlist.pop(iline)
+        self.adjlist.pop(iline) #TODO: check this
         for k in self.adjlist.keys():
             if iline in self.adjlist[k]:
                 self.adjlist[k].remove(iline)
@@ -49,6 +49,7 @@ class CFGraph():
             adjlist[i] = []
         cfg = CFGraph(instructions, adjlist)
         cfg._rbuild(0, [])
+        print(cfg)
         return cfg
     
     def _rbuild(self, iline, built):
@@ -88,3 +89,9 @@ class CFGraph():
                 print(self.instructions[i], end=", ")
             print()
         print("=====")
+
+    def __str__(self):
+        result = ""
+        result += "Num instructions: {}\n".format(len(self.instructions))
+        result += "Adjacency list: {}\n".format(self.adjlist)
+        return result

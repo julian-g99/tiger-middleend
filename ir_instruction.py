@@ -23,6 +23,7 @@ class IRInstruction:
 					 'brleq',
 					 'goto',
 					 'function_start',
+					 'function_def',
 					 'function_end',
 					 'function_int_decl',
 					 'function_float_decl',

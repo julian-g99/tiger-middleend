@@ -69,7 +69,7 @@ class IRInstruction:
 		elif self.instruction_type == "array_store":
 			return self.argument_list[:] #NOTE: the last argument should always be a constant
 		elif self.instruction_type == "array_load":
-			return self.argument_list[1]
+			return self.argument_list[:]
 		elif self.instruction_type == "array_assign":
 			return self.argument_list[:]
 

@@ -1,5 +1,6 @@
 from cf_graph import CFGraph
 from ir_instruction import IRInstruction
+import copy
 
 def deadcode_elim_marksweep(cfg):
 	sets = fixed_point_iter(cfg)
@@ -17,9 +18,18 @@ def deadcode_elim_marksweep(cfg):
 	while len(worklist) > 0:
 		i = worklist.pop()
 		instr1 = instructions[i]
-		for j in range(len(sets[i]["in"])):
+		# for j in range(len(sets[i]["in"])):
+		for j in sets[i]["in"]:
 			instr2 = instructions[j]
 			# print("instruction 1 is: {}, uses are: {}".format(instr1, instr.get_uses()))
+			# if i == 9:
+				# print("in set: {}".format(sets[i]["in"]))
+				# print("out set: {}".format(sets[i]["out"]))
+			# if i == 9 and j == 8:
+				# print("instruction 9: {}".format(instr1))
+				# print("instruction 8: {}".format(instr2))
+				# print("instruction 9 uses: {}".format(instr1.get_uses()))
+				# print("instruction 8 target: {}".format(instr2.get_write_target()))
 			if instr1.get_uses() != None and instr2.get_write_target() != None:
 				if instr2.get_write_target() in instr1.get_uses():
 					if not (j in marked):
@@ -27,6 +37,14 @@ def deadcode_elim_marksweep(cfg):
 						worklist.append(j)
 	
 	#sweep
+	# print unmarked
+	# i = 0
+	# while i < len(cfg.instructions):
+	# for i in range(len(instructions)):
+		# if i not in marked:
+			# print(cfg.instructions[i])
+		# i += 1
+
 	i = 0
 	while i < len(cfg.instructions):
 	# for i in range(len(instructions)):
@@ -36,6 +54,7 @@ def deadcode_elim_marksweep(cfg):
 
 
 def fixed_point_iter(cfg):
+	# print("=" * 20)
 	instructions = cfg.instructions
 	sets = []
 
@@ -66,12 +85,14 @@ def fixed_point_iter(cfg):
 		
 			#calc OUT
 			# out_set = list(set(sets[i]["gen"]).union(set(in_set) - set(sets[i]["kill"])))
-			out_set = sets[i]["gen"].union(in_set.difference(sets[i]["kill"]))
+			out_set = sets[i]["gen"].union(in_set - sets[i]["kill"])
 			# if sets[i]["out"].sort() != out_set.sort():
 			if sets[i]["out"] != out_set:
 				change = True
 			sets[i]["out"] = out_set
 	
+	# print_sets(sets)
+	# print("=" * 20)
 	return sets
 
 

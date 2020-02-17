@@ -9,13 +9,13 @@ def test_quicksort():
 	instructions = parse_instructions("public_test_cases/quicksort/quicksort.ir")
 	functions = get_functions(instructions)
 	cfgs = [CFGraph.build(func) for func in functions]
-	for i in range(len(cfgs[0].instructions)):
-		print("line num: {}, preds: {}".format(i, cfgs[0].get_predecessors(i)))
+	# for i in range(len(cfgs[0].instructions)):
+		# print("line num: {}, preds: {}".format(i, cfgs[0].get_predecessors(i)))
 	optimized_instructions = []
 	for cfg in cfgs:
 		deadcode_elim_marksweep(cfg)
 		optimized_instructions += cfg.instructions
-	generate_ir(optimized_instructions, "quicksort.ir")
+	generate_ir(optimized_instructions, "public_test_cases/examples/quicksort.ir")
 
 def main():
 	test_quicksort()

@@ -11,7 +11,7 @@ class CFGraph():
         for i in range(len(self.instructions)):
             instr2 = self.instructions[i]
             if instr2.is_def and instr1.does_kill(instr2):
-                kill.append(instr2)
+                kill.append(i)
         return kill
     
     def get_predecessors(self, iline):

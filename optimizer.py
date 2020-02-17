@@ -1,6 +1,25 @@
 from cf_graph import CFGraph
 from ir_instruction import IRInstruction
+from parser import get_functions
 import copy
+
+def perform_deadcode(instructions):
+	functions = get_functions(instructions)
+	cfgs = [CFGraph.build(func) for func in functions]
+	optimized_instructions = []
+	for cfg in cfgs:
+		deadcode_elim_marksweep(cfg)
+		optimized_instructions += cfg.instructions
+	return optimized_instructions
+
+def perform_copy_propagation(instructions):
+	functions = get_functions(instructions)
+	cfgs = [CFGraph.build(func) for func in functions]
+	optimized_instructions = []
+	for cfg in cfgs:
+		copy_propagation(cfg)
+		optimized_instructions += cfg.instructions
+	return optimized_instructions
 
 def deadcode_elim_marksweep(cfg):
 	sets = fixed_point_iter(cfg)
@@ -52,6 +71,43 @@ def deadcode_elim_marksweep(cfg):
 			cfg.remove(i)
 		i += 1
 
+def copy_propagation(cfg):
+	sets = fixed_point_iter(cfg)
+	copies = get_all_copies(cfg)
+
+	# instr: w = x
+	# instr2: x = y
+	# so we want to replace the `x` in instr with `y`
+	for i in range(len(cfg.instructions)):
+		instr = cfg.instructions[i]
+		if instr.is_use:
+			for j in range(len(instr.get_uses())):
+				instr_copies = get_all_copies_of(copies, instr.get_uses()[j])
+				arg_copies = set([line for (target, value, line) in instr_copies])
+				intersect = instr_copies.intersection(sets[i]["in"])
+				if len(intersect) == 1:
+					has_redef = False
+					instr2 = cfg.instructions[intersect.pop()]
+					for line_num in sets[i]["in"]:
+						if cfg.instructions[line_num].is_def and cfg.instructions[line_num].get_write_target() == instr2.argument_list[1]:
+							has_redef = True
+					if not has_redef:
+						cfg.instructions[i].set_use(j, instr2.argument_list[1])
+
+def get_all_copies(cfg):
+	copies = set()
+	for instr in cfg.instructions:
+		if instr.instruction_type == "assign":
+			my_tup = instr.argument_list[0], instr.argument_list[1], instr.line
+			copies.add(my_tup)
+	return copies
+
+def get_all_copies_of(copies, arg):
+	instr_copies = set()
+	for (target, value, line) in copies:
+		if target == arg:
+			instr_copies.add((target, value, line))
+	return instr_copies
 
 def fixed_point_iter(cfg):
 	# print("=" * 20)

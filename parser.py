@@ -1,6 +1,7 @@
 import re
 from ir_instruction import IRInstruction
 
+
 def parse_instructions(fp):
 	function_regex = r'^.+ .+(.*):$'
 	instructions = []
@@ -32,8 +33,26 @@ def parse_instructions(fp):
 			line_num += 1
 	return instructions
 
+
+def get_functions(instructions):
+	functions = []
+	line = 0
+	while line < len(instructions):
+		if instructions[line].type == 'function_start':
+			functions.append([instructions[line]])
+			line += 1
+			while line < len(instructions) and instructions[line].type != 'function_end':
+				functions[-1].append(instructions[line])
+				line += 1
+			if (line < len(instructions) and instructions[line].type == 'function_end'):
+				functions[-1].append(instructions[line])
+			line += 1
+	return functions
+
+
 def get_arguments(line):
 	return [arg.strip() for arg in line.split(", ")[1:]]
+
 
 def get_variables(line):
 	colon_index = line.find(": ")

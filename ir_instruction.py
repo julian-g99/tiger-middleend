@@ -45,8 +45,8 @@ class IRInstruction:
 		self.is_goto = self.instruction_type == "goto"
 		self.is_label = self.instruction_type == "label"
 
-		self.succs = []
-		self.preds = []
+		# self.succs = []
+		# self.preds = []
 
 	def does_kill(self, other_def):
 		return self.argument_list[0] == other_def.argument_list[0]
@@ -56,11 +56,11 @@ class IRInstruction:
 		if (self.instruction_type in has_target):
 			return self.argument_list[0].strip()
 
-	def add_succ(self, succ):
-		self.succs.append(succ)
+	# def add_succ(self, succ):
+	# 	self.succs.append(succ)
 
-	def add_prev(self, pred):
-		self.preds.append(pred)
+	# def add_prev(self, pred):
+	# 	self.preds.append(pred)
 	
 	def __str__(self):
 		return "line number: {}, type: {}, argument_list: {}".format(self.line, self.instruction_type, self.argument_list)

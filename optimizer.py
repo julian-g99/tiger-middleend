@@ -25,9 +25,13 @@ def deadcode_elim_marksweep(cfg):
                     worklist.append(j)
     
     #sweep
-    for i in range(len(instructions)):
+    i = 0
+    while i < len(cfg.instructions):
+    # for i in range(len(instructions)):
         if not (i in marked):
+            print("removing: {}".format(cfg.instructions[i]))
             cfg.remove(i)
+        i += 1
 
 
 def fixed_point_iter(cfg):

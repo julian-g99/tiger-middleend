@@ -24,17 +24,22 @@ class CFGraph():
     def remove(self, iline):
         if not (iline in self.adjlist.keys()):
             raise Exception("line number not found in cfg")
-        for i in range(len(self.instructions)):
-            import pdb
-            pdb.set_trace()
-            print(iline)
+        i = 0
+        while i < len(self.instructions):
             if self.instructions[i].line == iline:
-                self.instructions.pop(iline)
+                self.instructions.pop(i) #FIXME: you originally had this as iline instead of i, does this work?
+            i += 1
+        # for i in range(len(self.instructions)):
+            # # import pdb
+            # # pdb.set_trace()
+            # # print("iline is:{}, instruction line is: {}".format(iline, self.instructions[i].line))
+            # print("number of instructions: {}, instruction line: {}".format(len(self.instructions), i))
+            # if self.instructions[i].line == iline:
+                # self.instructions.pop(iline)
         self.adjlist.pop(iline)
         for k in self.adjlist.keys():
             if iline in self.adjlist[k]:
                 self.adjlist[k].remove(iline)
-            
 
 
     @staticmethod

@@ -16,7 +16,7 @@ def parse_instructions(fp):
 			elif "float-list:" in line:
 				instructions.append(IRInstruction(line_num, "function_float_decl", get_variables(line)))
 			elif re.match(function_regex, line) != None:
-				instructions.append(IRInstruction(line_num, "function_def", []))
+				instructions.append(IRInstruction(line_num, "function_def", [line]))
 			elif ":" in line:
 				instructions.append(IRInstruction(line_num, "label", [line[len(line) - len(line.strip()) - 1 : line.find(":")]]))
 			elif "assign" in line:
@@ -25,6 +25,8 @@ def parse_instructions(fp):
 					instructions.append(IRInstruction(line_num, "val_assign", arg_list))
 				elif len(arg_list) == 3:
 					instructions.append(IRInstruction(line_num, "array_assign", arg_list))
+			elif line.strip() == "" :
+				continue
 			else:
 				opcode = line[len(line) - len(line.strip()) - 1 : line.find(',')]
 				arg_list = get_arguments(line)
@@ -47,5 +49,4 @@ def get_variables(line):
 if __name__ == "__main__":
 	instructions = parse_instructions("public_test_cases/quicksort/quicksort.ir")
 	for i in instructions:
-		if i.instruction_type == "label":
-			print(i)
+		print(i)

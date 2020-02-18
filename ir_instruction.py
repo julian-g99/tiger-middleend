@@ -36,7 +36,6 @@ class IRInstruction:
 		critical_arr = ['breq',
 					 'brneq',
 					 'brlt',
-					 'brgq',
 					 'brgt',
 					 'brgeq',
 					 'brleq',
@@ -51,7 +50,8 @@ class IRInstruction:
 					 'callr',
 					 'array_load',
 					 'array_store',
-					 'return']
+					 'return',
+					 'array_assign']
 		branch_arr = ['breq',
 				   'brneq',
 				   'brlt',
@@ -83,9 +83,9 @@ class IRInstruction:
 		elif self.instruction_type in branches:
 			return self.argument_list[1:3]
 		elif self.instruction_type == "callr":
-			return self.argument_list[1:]
-		elif self.instruction_type == "call":
 			return self.argument_list[2:]
+		elif self.instruction_type == "call":
+			return self.argument_list[1:]
 		elif self.instruction_type == "array_store":
 			return self.argument_list[:] #NOTE: the last argument should always be a constant
 		elif self.instruction_type == "return":
@@ -93,7 +93,9 @@ class IRInstruction:
 		elif self.instruction_type == "array_load":
 			return self.argument_list[1:]
 		elif self.instruction_type == "array_assign":
-			return self.argument_list[:]
+			return self.argument_list[1:]
+		else:
+			return None
 	
 	#TODO: check if this actually works in place
 	def set_use(self, idx, arg):
@@ -152,6 +154,8 @@ class IRInstruction:
 		has_target = ['val_assign', 'array_assign', 'sub', 'add', 'mult', 'div', 'and', 'or', 'callr', 'array_load']
 		if self.instruction_type in has_target:
 			return self.argument_list[0].strip()
+		else:
+			return None
 
 	def get_branch_target(self):
 		if self.is_branch:

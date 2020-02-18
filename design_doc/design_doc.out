@@ -1,0 +1,12 @@
+\BOOKMARK [1][-]{section.1}{Architecture}{}% 1
+\BOOKMARK [2][-]{subsection.1.1}{Intermediate Representation}{section.1}% 2
+\BOOKMARK [2][-]{subsection.1.2}{Control Flow Graph}{section.1}% 3
+\BOOKMARK [2][-]{subsection.1.3}{Optimize}{section.1}% 4
+\BOOKMARK [1][-]{section.2}{Implementation Language}{}% 5
+\BOOKMARK [1][-]{section.3}{Challenges}{}% 6
+\BOOKMARK [1][-]{section.4}{Known bugs}{}% 7
+\BOOKMARK [1][-]{section.5}{Potential Improvements}{}% 8
+\BOOKMARK [1][-]{section.6}{Usage instructions}{}% 9
+\BOOKMARK [2][-]{subsection.6.1}{Version requirements}{section.6}% 10
+\BOOKMARK [2][-]{subsection.6.2}{Running the optimizer}{section.6}% 11
+\BOOKMARK [1][-]{section.7}{Test Results}{}% 12

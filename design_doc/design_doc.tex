@@ -30,7 +30,7 @@
 	\begin{section}{Architecture}
 		This project has the following components: IR Instruction class, parser methods, IR generation methods, control flow graph class, optimizer methods, and a main script for running. Program execution starts by parsing all the instructions, passing it to the optimizer, and then outputting the final IR.
 		\begin{subsection}{Intermediate Representation}
-			We have decided to encode every possible line in tiger IR code as an IRInstruction class, this includes all the obvious suspects, but also:
+			We have decided to encode every possible line in tiger IR code as an IRInstruction object, this includes all the obvious suspects, but also:
 			\begin{itemize}
 				\item Function boilerplate (start and end signature, declaration, variable lists)
 				\item Labels
@@ -61,11 +61,11 @@
 						\item Removing an instruction from the CFG
 					\end{itemize}
 			\end{itemize}
-			It's worth noting that each basic block in our codebase is exactly one IR Instruction, and this includes all the types that we don't normally consider to be instructions. For those types, its gen set and kill set are empty, and it just passes control from the previous instruction to the next instruction in order. We initially attempted to use a maximal basic block, but that presented some challenges that made us reconsider and just single-instruction basic blocks. For this same reason, we also do not have a class for basic blocks.
+			It's worth noting that each basic block in our codebase is exactly one IR Instruction, and this includes all the types that we don't normally consider to be instructions. For those types, its gen set and kill set are empty, and it just passes control from the previous instruction to the next instruction in order. We initially attempted to use a maximal basic block, but that presented some challenges that made us reconsider and just use single-instruction basic blocks. For this same reason, we also do not have a class for basic blocks.
 		\end{subsection}
 
 		\begin{subsection}{Optimize}
-			The optimizer contains functions for running dead code elimination using fixed point algorithm as well as copy propagation. However, as noted in a later section, copy propagation is incomplete in the sense that it either doesn't eliminate enough instructions, or it results in IR code that's not valid.
+			The optimizer contains functions for running dead code elimination using fixed point algorithm as well as copy propagation. However, as noted in a later section, copy propagation is incomplete in the sense that it doesn't seem to actually find any replacement candidates (likely due to its constraints being too strong).
 
 			Regardless, the way that we optimize the code (assuming both dead code and copy propagation are to be performed) is to do a first pass of dead code, a pass of copy propagation, and another pass of dead code. Note that in our implementation, after a single round of optimization, we actually output an IR file, and start the next round by parsing that IR file. The reason for doing this is twofold:
 			\begin{itemize}
@@ -90,7 +90,7 @@
 	\begin{section}{Challenges}
 		As described before, we ran into a lot of issues with c++. This is partially due to lack of familiarity we had with the language, but also because of the more verbose nature of c++. While it can still do the same things that python does, having builtin functions and list comprehension and array slices make things much easier.
 
-		Once we refactored our codebase to python, there weren't any significant issues we ran into.
+		Other than the language difficulties, another thing that made it difficult at first was the fact that we used maximial basic block. After switching to a single-instruction block, the algorithm was much easier to implement and debug.
 	\end{section}
 
 	\begin{section}{Known bugs}
@@ -106,7 +106,7 @@
 
 	\begin{section}{Usage instructions}
 		\begin{subsection}{Version requirements}
-			Any installalation of python 3 should work. We implemented and tested our code using python 3.8, but since we didn't use any 3.8 features, 3.7 should work as well. There shouldn't be any packages that need be installed, but if python reports the absence of any package, install with pip.
+			Any installalation of python 3 should work. We implemented and tested our code using python 3.8, but since we didn't use any 3.8 features, 3.7 should work as well. There shouldn't be any package that needs be installed, but if python reports the absence of any package, install with pip.
 		\end{subsection}
 
 		\begin{subsection}{Running the optimizer}
@@ -114,8 +114,8 @@
 
 			As an example, one might run the code as follow: \\
 			\begin{verbatim}
-				python main.py --input="public\_test\_cases/sqrt/sqrt.ir" \
-				--output=="public\_test\_cases/output/sqrt.ir" --dead
+				python main.py --input="public_test_cases/sqrt/sqrt.ir" --output=
+				"public_test_cases/output/sqrt.ir" --dead
 			\end{verbatim}
 		\end{subsection}
 	\end{section}

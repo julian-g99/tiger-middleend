@@ -23,6 +23,13 @@ def perform_copy_propagation(instructions):
 
 def deadcode_elim_marksweep(cfg, should_print=False):
 	sets = fixed_point_iter(cfg)
+
+	for i in range(len(cfg.instructions)):
+		instruction = cfg.instructions[i]
+		if instruction.instruction_type == "array_store" and instruction.argument_list[0] == 't':
+			for instr2 in sets[i]["in"]:
+				print(cfg.instructions[instr2])
+
 	instructions = cfg.instructions
 	worklist = []
 	marked = []
@@ -54,13 +61,15 @@ def deadcode_elim_marksweep(cfg, should_print=False):
 			# print(cfg.instructions[i])
 		# i += 1
 
-	i = 0
-	while i < len(cfg.instructions):
-	# for i in range(len(instructions)):
-		if not (i in marked):
-			print(cfg.instructions[i].instruction_type)
-			cfg.remove(i)
-		i += 1
+	new_instructions = [cfg.instructions[i] for i in range(len(cfg.instructions)) if i in marked]
+	cfg.instructions = new_instructions
+	# i = 0
+	# while i < len(cfg.instructions):
+	# # for i in range(len(instructions)):
+		# if i not in marked:
+			# # print(cfg.instructions[i].instruction_type)
+			# cfg.remove(i)
+		# i += 1
 
 def copy_propagation(cfg):
 	sets = fixed_point_iter(cfg)
@@ -84,8 +93,15 @@ def copy_propagation(cfg):
 					for line_num in sets[i]["in"]:
 						if cfg.instructions[line_num].is_def and cfg.instructions[line_num].get_write_target() == instr2.argument_list[1]:
 							has_redef = True
-					if not has_redef:
+					if not has_redef and (not is_constant(instr2.argument_list[1])):
 						cfg.instructions[i].set_use(j, instr2.argument_list[1])
+
+def is_constant(arg):
+	try:
+		float(arg)
+		return True
+	except ValueError:
+		return False
 
 def only_copy(instructions, intersect):
 	if len(intersect) == 0:
@@ -130,7 +146,8 @@ def fixed_point_iter(cfg):
 		if instr.is_def:
 			bblock["gen"].add(i)
 		bblock["kill"] = set(cfg.get_kill_set(i))
-		bblock["out"] = bblock["in"].copy()
+		# bblock["out"] = bblock["in"].copy()
+		bblock["out"] = set()
 		sets.append(bblock)
 
 	#iterate
@@ -152,7 +169,7 @@ def fixed_point_iter(cfg):
 			# if sets[i]["out"].sort() != out_set.sort():
 			if sets[i]["out"] != out_set:
 				change = True
-			sets[i]["out"] = out_set
+				sets[i]["out"] = out_set
 	
 	# print_sets(sets)
 	# print("=" * 20)

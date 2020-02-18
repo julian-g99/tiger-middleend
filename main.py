@@ -27,15 +27,17 @@ if len(sys.argv) == 1:
 
 def main():
 	instructions = parse_instructions(args.input)
+	# for i in instructions:
+		# print(i)
 
 	if args.dead and args.copy:
 		first_pass = perform_deadcode(instructions)
-		generate_ir(first_pass, "outputs/first_pass.ir")
-		first_pass = parse_instructions("outputs/first_pass.ir")
+		generate_ir(first_pass, "output/first_pass.ir")
+		first_pass = parse_instructions("output/first_pass.ir")
 
 		second_pass = perform_copy_propagation(first_pass)
-		generate_ir(second_pass, "outputs/second_pass.ir")
-		second_pass = parse_instructions("outputs/second_pass.ir")
+		generate_ir(second_pass, "output/second_pass.ir")
+		second_pass = parse_instructions("output/second_pass.ir")
 
 		final = perform_deadcode(second_pass)
 		generate_ir(final, args.output)
@@ -52,3 +54,4 @@ def main():
 
 if __name__ == "__main__":
 	main()
+

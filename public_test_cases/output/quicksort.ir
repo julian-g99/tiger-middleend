@@ -34,7 +34,6 @@ end:
 void main():
 int-list: A[100], n, i, t
 float-list:
-    assign, t, 0
     callr, n, geti
     brgt, return, n, 100
     sub, n, n, 1

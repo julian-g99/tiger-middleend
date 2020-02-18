@@ -25,14 +25,17 @@ class CFGraph():
 		if not (iline in self.adjlist.keys()):
 			raise Exception("line number not found in cfg")
 		i = 0
+		instr = None
 		while i < len(self.instructions):
-			if self.instructions[i].line == iline:
-				self.instructions.pop(i) #FIXME: you originally had this as iline instead of i, does this work?
+			# if self.instructions[i].line == iline:
+			if i == iline:
+				instr = self.instructions.pop(i) #FIXME: you originally had this as iline instead of i, does this work?
+				self.adjlist.pop(i) #TODO: check this
 			i += 1
-		self.adjlist.pop(iline) #TODO: check this
+			
 		for k in self.adjlist.keys():
-			if iline in self.adjlist[k]:
-				self.adjlist[k].remove(iline)
+			if instr.line in self.adjlist[k]:
+				self.adjlist[k].remove(instr.line)
 
 	@staticmethod
 	def build(instructions):

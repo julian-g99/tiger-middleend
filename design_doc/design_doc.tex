@@ -111,6 +111,12 @@
 
 		\begin{subsection}{Running the optimizer}
 			To run the optimizer, simply using the \textit{main.py} file. When ran with the -h flag or without providing necessary flags, a help menu will show up that details the command line flags that need to be passed in.
+
+			As an example, one might run the code as follow: \\
+			\begin{verbatim}
+				python main.py --input="public\_test\_cases/sqrt/sqrt.ir" \
+				--output=="public\_test\_cases/output/sqrt.ir" --dead
+			\end{verbatim}
 		\end{subsection}
 	\end{section}
 
@@ -121,25 +127,25 @@
 				\hline
 				Test Case & Original & A & B & C & Ours \\
 				\hline
-				0 & 0 & 0 & 0 & 0 & 435 \\
+				0 & 482 & 473 & 434 & 407 & 434 \\
 				\hline
-				1 & 0 & 0 & 0 & 0 & 1027 \\
+				1 & 1124 & 1105 & 1026 & 970 & 1026 \\
 				\hline
-				2 & 0 & 0 & 0 & 0 & 1659 \\
+				2 & 1806 & 1777 & 1658 & 1554 & 1658 \\
 				\hline
-				3 & 0 & 0 & 0 & 0 & 2323 \\
+				3 & 2520 & 2481 & 2322 & 2172 & 2322 \\
 				\hline
-				4 & 0 & 0 & 0 & 0 & 2879 \\
+				4 & 3126 & 3077 & 2878 & 2677 & 2878 \\
 				\hline
-				5 & 0 & 0 & 0 & 0 & 3883 \\
+				5 & 4180 & 4121 & 3882 & 3638 & 3882 \\
 				\hline
-				6 & 0 & 0 & 0 & 0 & 4307 \\
+				6 & 4654 & 4585 & 4306 & 3958 & 4306 \\
 				\hline
-				7 & 0 & 0 & 0 & 0 & 5147 \\
+				7 & 5544 & 5465 & 5146 & 4746 & 5146 \\
 				\hline
-				8 & 0 & 0 & 0 & 0 & 5827 \\
+				8 & 6274 & 6185 & 5826 & 5449 & 5826 \\
 				\hline
-				9 & 0 & 0 & 0 & 0 & 6515 \\
+				9 & 7012 & 6913 & 6514 & 6018 & 6514 \\
 				\hline
 			\end{tabular}
 		\end{center}
@@ -149,27 +155,28 @@
 				\hline
 				Test Case & Original & A & B & C & Ours \\
 				\hline
-				0 & 0 & 0 & 0 & 0 & 83 \\
+				0 & 94 & 87 & 83 & 76 & 83 \\
 				\hline
-				1 & 0 & 0 & 0 & 0 & 61 \\
+				1 & 70 & 65 & 61 & 55 & 61 \\
 				\hline
-				2 & 0 & 0 & 0 & 0 & 11 \\
+				2 & 16 & 15 & 11 & 10 & 11 \\
 				\hline
-				3 & 0 & 0 & 0 & 0 & 89 \\
+				3 & 101 & 93 & 89 & 82 & 89 \\
 				\hline
-				4 & 0 & 0 & 0 & 0 & 119 \\
+				4 & 133 & 123 & 119 & 109 & 119 \\
 				\hline
-				5 & 0 & 0 & 0 & 0 & 139 \\
+				5 & 155 & 143 & 139 & 127 & 139 \\
 				\hline
-				6 & 0 & 0 & 0 & 0 & 151 \\
+				6 & 168 & 155 & 151 & 138 & 151 \\
 				\hline
-				7 & 0 & 0 & 0 & 0 & 247 \\
+				7 & 272 & 251 & 247 & 226 & 247 \\
 				\hline
-				8 & 0 & 0 & 0 & 0 & 139 \\
+				8 & 155 & 143 & 139 & 127 & 139 \\
 				\hline
-				9 & 0 & 0 & 0 & 0 & 11 \\
+				9 & 16 & 15 & 11 & 10 & 11 \\
 				\hline
 			\end{tabular}
 		\end{center}
+		As can be seen, our output matches the compiler B result exactly. The criteria that we've constrained in code for copy propagation seems to be too tight, so that in most cases it doesn't actually replace any copies.
 	\end{section}
 \end{document}
